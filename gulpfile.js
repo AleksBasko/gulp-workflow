@@ -243,6 +243,6 @@ gulp.task('watch', () => {
 
 gulp.task('dev', gulp.series(
     'clean',
-    gulp.parallel('pug', 'css', gulp.series('sprite', 'spriteSVG', 'image'), 'js', 'fonts')));
+    gulp.parallel('pug', gulp.series('sprite', 'spriteSVG', 'image', 'css'), 'js', 'fonts')));
 
 gulp.task('default', gulp.series('dev', gulp.parallel('watch', 'serve')));
