@@ -82,8 +82,6 @@ gulp.task('css', () => {
 			cascade: true
 		}))
 		.pipe($.sourcemaps.write('.'))
-		.pipe($.csscomb())
-		.pipe($.cssbeautify())
 		.pipe($.size({
 			title: 'before compress'
 		}))
@@ -235,19 +233,16 @@ gulp.task('sprite', gulp.series('cleansprite', 'spritemade'));
 gulp.task('svgmin', () => {
 	return gulp.src('src/image/sprites/toSpriteSVG/*.svg')
 		.pipe($.svgmin({
-			js2svg: {
-				pretty: true
-			}
-		}))
-		.pipe($.cheerio({
-			run: ($) => {
-				$('[fill]').removeAttr('fill');
-				$('[stroke]').removeAttr('stroke');
-				$('[style]').removeAttr('style');
-				$('[xmlns]').removeAttr('xmlns');
-			},
-			parserOptions: { xmlMode: false }
-		}))
+            plugins: [{
+                removeDoctype: true
+            }, {
+                removeComments: true
+            }, {
+                removeAttrs: {
+                    attrs: ['fill', 'stroke', 'xmlns'],
+                },
+            }]
+        }))
 		.pipe($.replace('&gt;', '>'))
 		.pipe($.svgSprite({
 			mode: {
