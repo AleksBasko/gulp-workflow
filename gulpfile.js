@@ -12,6 +12,8 @@ const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
 const webpackConfig = require('./webpack.config');
 
+const fs = require('fs');
+
 const isProduction = false;
 const tinifyKey = 'YOUR_API_KEY';
 
@@ -29,10 +31,8 @@ const path = {
 		imageDist: 'dist/image/'
 	},
 	js: {
-		// jsSrc: ['node_modules/svg4everybody/dist/svg4everybody.js', 'node_modules/jquery/dist/jquery.js', 'src/js/first.js', 'src/js/part/**/*.js'],
-		// if node_modules in your dir
-		jsSrc: ['src/js/first.js', 'src/js/part/**/*.js'],
-		jsDist: 'dist/js/'
+		jsSrc: ['src/libs/**/*.js'],
+		jsDist: 'dist/libs/'
 	},
 	webpack: {
 		src: 'src/js/*.js',
@@ -47,6 +47,7 @@ const path = {
 		pug: 'src/**/*.pug',
 		js: 'src/**/*.js',
 		fonts: 'src/fonts/**/*.*',
+		data: 'src/data/**/*.*',
 		image: {
 			image: ['src/image/**/*.*', '!src/image/sprites/toSprite/*.*', '!src/image/sprites/toSpriteSVG/*.*'],
 			sprite: 'src/image/sprites/toSprite/*.+(jpg|jpeg|png)',
@@ -108,6 +109,9 @@ gulp.task('pug', () => {
 			})
 		}))
 		.pipe($.pug({
+            locals : {
+                mainData: JSON.parse(fs.readFileSync('./src/data/mainData.json', 'utf8'))
+            },
 			pretty: !isProduction
 		}))
 		.pipe(gulp.dest(path.pug.pugDist))
@@ -125,7 +129,6 @@ gulp.task('js', () => {
 				};
 			})
 		}))
-		.pipe($.concat('main.js'))
 		.pipe($.if(isProduction, $.uglifyjs()))
 		.pipe(gulp.dest(path.js.jsDist))
 		.pipe(reload({stream: true}));
@@ -279,7 +282,8 @@ gulp.task('clean', () => {
 gulp.task('watch', () => {
 	gulp.watch(path.watch.style, gulp.series('css'));
 	gulp.watch(path.watch.pug, gulp.series('pug'));
-	// gulp.watch(path.watch.js, gulp.series('js'));
+	gulp.watch(path.watch.data, gulp.series('pug'));
+	gulp.watch(path.watch.js, gulp.series('js'));
 	gulp.watch(path.watch.fonts, gulp.series('fonts'));
 	gulp.watch(path.watch.image.sprite, gulp.series('sprite'));
 	gulp.watch(path.watch.image.spriteSVG, gulp.series('spriteSVG'));
@@ -288,6 +292,6 @@ gulp.task('watch', () => {
 
 gulp.task('dev', gulp.series(
 	'clean',
-	gulp.parallel('pug', gulp.series('sprite', 'spriteSVG', 'image', 'css'), 'webpack', 'fonts'), 'css'));
+	gulp.parallel('pug', gulp.series('sprite', 'spriteSVG', 'image', 'css'), 'webpack', 'fonts'), 'css', 'js'));
 
 gulp.task('default', gulp.series('dev', gulp.parallel('watch', 'serve')));

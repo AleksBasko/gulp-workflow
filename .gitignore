@@ -1,5 +1,10 @@
-/node_modules
-/.idea
-/dist
-/src/image/sprites/sprite
-/src/image/sprites/spriteSVG
+### macOS ###
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+node_modules
+.idea
+dist
+src/image/sprites/sprite
+src/image/sprites/spriteSVG
