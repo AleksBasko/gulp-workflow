@@ -42,6 +42,10 @@ const path = {
 		fontsSrc: 'src/fonts/**/*.*',
 		fontsDist: 'dist/fonts/'
 	},
+	docs: {
+		docsSrc: 'src/docs/**/*.*',
+		docsDist: 'dist/docs/'
+	},
 	watch: {
 		style: ['src/style/**/*.scss', 'src/components/**/*.scss'],
 		pug: 'src/**/*.pug',
@@ -186,6 +190,15 @@ gulp.task('fonts', () => {
 		.pipe(reload({stream: true}));
 });
 
+// Docs
+gulp.task('docs', () => {
+	return gulp.src(path.docs.docsSrc)
+		.pipe($.changed(path.docs.docsDist))
+		.pipe(gulp.dest(path.docs.docsDist))
+		.pipe(reload({stream: true})
+	);
+});
+
 gulp.task('image', () => {
 	return gulp.src(path.image.imageSrc)
 		.pipe($.plumber({
@@ -285,6 +298,7 @@ gulp.task('watch', () => {
 	gulp.watch(path.watch.data, gulp.series('pug'));
 	gulp.watch(path.watch.js, gulp.series('js'));
 	gulp.watch(path.watch.fonts, gulp.series('fonts'));
+	gulp.watch(path.watch.docs, gulp.series('docs'));
 	gulp.watch(path.watch.image.sprite, gulp.series('sprite'));
 	gulp.watch(path.watch.image.spriteSVG, gulp.series('spriteSVG'));
 	gulp.watch(path.watch.image.image, gulp.series('image'));
@@ -292,6 +306,6 @@ gulp.task('watch', () => {
 
 gulp.task('dev', gulp.series(
 	'clean',
-	gulp.parallel('pug', gulp.series('sprite', 'spriteSVG', 'image', 'css'), 'webpack', 'fonts'), 'css', 'js'));
+	gulp.parallel('pug', gulp.series('sprite', 'spriteSVG', 'image', 'css'), 'webpack', 'fonts', 'docs'), 'css', 'js'));
 
 gulp.task('default', gulp.series('dev', gulp.parallel('watch', 'serve')));

@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const isProduction = false;
 
@@ -38,10 +39,13 @@ const webpackConfig = {
 
 if (isProduction) {
 	webpackConfig.plugins.push(
-		new webpack.optimize.UglifyJsPlugin({
-			sourceMap: isProduction ? false : true,
-			compress: { warnings: false }
-		})
+        new UglifyJsPlugin({
+            sourceMap: isProduction ? false : true,
+            uglifyOptions: {
+                ecma: 8,
+                warnings: false
+            }
+        })
 	);
 }
 
